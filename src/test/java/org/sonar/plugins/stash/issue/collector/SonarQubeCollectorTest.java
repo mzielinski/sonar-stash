@@ -16,6 +16,7 @@ import org.sonar.api.issue.Issue;
 import org.sonar.api.issue.ProjectIssues;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.plugins.stash.InputFileCache;
+import org.sonar.plugins.stash.StashPluginConfiguration;
 import org.sonar.plugins.stash.issue.SonarQubeIssue;
 import org.sonar.plugins.stash.issue.SonarQubeIssuesReport;
 
@@ -36,6 +37,9 @@ public class SonarQubeCollectorTest {
   @Mock
   Issue issue2;
 
+  @Mock
+  StashPluginConfiguration config;
+
   @Before
   public void setUp(){
     projectBaseDir = new File("baseDir");
@@ -48,6 +52,8 @@ public class SonarQubeCollectorTest {
 
     when(inputFileCache.getInputFile("component1")).thenReturn(inputFile1);
     when(inputFileCache.getInputFile("component2")).thenReturn(inputFile2);
+
+    config = mock(StashPluginConfiguration.class);
 
     issue1 = mock(Issue.class);
     when(issue1.line()).thenReturn(1);
@@ -79,7 +85,7 @@ public class SonarQubeCollectorTest {
     ArrayList<Issue> issues = new ArrayList<Issue>();
     when(projectIssues.issues()).thenReturn(issues);
 
-    SonarQubeIssuesReport report = SonarQubeCollector.extractIssueReport(projectIssues, inputFileCache, projectBaseDir, false);
+    SonarQubeIssuesReport report = SonarQubeCollector.extractIssueReport(projectIssues, inputFileCache, projectBaseDir, config);
     assertTrue(report.countIssues() == 0);
   }
 
@@ -90,7 +96,7 @@ public class SonarQubeCollectorTest {
     issues.add(issue2);
     when(projectIssues.issues()).thenReturn(issues);
 
-    SonarQubeIssuesReport report = SonarQubeCollector.extractIssueReport(projectIssues, inputFileCache, projectBaseDir, false);
+    SonarQubeIssuesReport report = SonarQubeCollector.extractIssueReport(projectIssues, inputFileCache, projectBaseDir, config);
     assertTrue(report.countIssues() == 2);
     assertTrue(report.countIssues("severity1") == 1);
     assertTrue(report.countIssues("severity2") == 1);
@@ -115,7 +121,7 @@ public class SonarQubeCollectorTest {
     issues.add(issue1);
     when(projectIssues.issues()).thenReturn(issues);
 
-    SonarQubeIssuesReport report = SonarQubeCollector.extractIssueReport(projectIssues, inputFileCache, projectBaseDir, false);
+    SonarQubeIssuesReport report = SonarQubeCollector.extractIssueReport(projectIssues, inputFileCache, projectBaseDir, config);
     assertTrue(report.countIssues() == 1);
     assertTrue(report.countIssues("severity1") == 1);
     assertTrue(report.countIssues("severity2") == 0);
@@ -137,7 +143,7 @@ public class SonarQubeCollectorTest {
     issues.add(issue2);
     when(projectIssues.issues()).thenReturn(issues);
 
-    SonarQubeIssuesReport report = SonarQubeCollector.extractIssueReport(projectIssues, inputFileCache, projectBaseDir, false);
+    SonarQubeIssuesReport report = SonarQubeCollector.extractIssueReport(projectIssues, inputFileCache, projectBaseDir, config);
     assertTrue(report.countIssues() == 1);
     assertTrue(report.countIssues("severity1") == 0);
     assertTrue(report.countIssues("severity2") == 1);
@@ -152,7 +158,7 @@ public class SonarQubeCollectorTest {
     issues.add(issue2);
     when(projectIssues.issues()).thenReturn(issues);
 
-    SonarQubeIssuesReport report = SonarQubeCollector.extractIssueReport(projectIssues, inputFileCache, projectBaseDir, false);
+    SonarQubeIssuesReport report = SonarQubeCollector.extractIssueReport(projectIssues, inputFileCache, projectBaseDir, config);
     assertTrue(report.countIssues() == 1);
     assertTrue(report.countIssues("severity1") == 0);
     assertTrue(report.countIssues("severity2") == 1);
@@ -167,13 +173,14 @@ public class SonarQubeCollectorTest {
   public void testExtractIssueReportWithIncludeExistingIssuesOption() {
     when(issue1.isNew()).thenReturn(false);
     when(issue2.isNew()).thenReturn(true);
+    when(config.includeExistingIssues()).thenReturn(true);
 
     ArrayList<Issue> issues = new ArrayList<Issue>();
     issues.add(issue1);
     issues.add(issue2);
     when(projectIssues.issues()).thenReturn(issues);
 
-    SonarQubeIssuesReport report = SonarQubeCollector.extractIssueReport(projectIssues, inputFileCache, projectBaseDir, true);
+    SonarQubeIssuesReport report = SonarQubeCollector.extractIssueReport(projectIssues, inputFileCache, projectBaseDir, config);
     assertTrue(report.countIssues() == 2);
     assertTrue(report.countIssues("severity1") == 1);
     assertTrue(report.countIssues("severity2") == 1);
