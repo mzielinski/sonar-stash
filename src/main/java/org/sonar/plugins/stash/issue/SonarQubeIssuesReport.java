@@ -22,7 +22,7 @@ public class SonarQubeIssuesReport {
   public List<SonarQubeIssue> getIssues(){
     return issues;
   }
-  
+
   public List<SonarQubeIssue> getIssuesBySeverity(String severity) {
     List<SonarQubeIssue> result = new ArrayList<>();
     for (SonarQubeIssue issue : issues) {

@@ -55,7 +55,7 @@ public class StashDiffReport {
 
     return result;
   }
-  
+
   /**
    * Depends on the type of the diff.
    * If type == "CONTEXT", return the source line of the diff.
