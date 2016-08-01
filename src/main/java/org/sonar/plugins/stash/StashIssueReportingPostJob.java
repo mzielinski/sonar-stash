@@ -37,16 +37,16 @@ public class StashIssueReportingPostJob implements PostJob {
       if (notifyStash) {
         
         SonarQubeIssuesReport issueReport = stashRequestFacade.extractIssueReport(projectIssues, inputFileCache);
-          
+
         int issueThreshold = stashRequestFacade.getIssueThreshold();
         String sonarQubeURL = config.getSonarQubeURL();
-          
+
         // Stash MANDATORY options
         String stashURL = stashRequestFacade.getStashURL();
         String stashProject = stashRequestFacade.getStashProject();
         String repository = stashRequestFacade.getStashRepository();
         String stashPullRequestId = stashRequestFacade.getStashPullRequestId();
-          
+
         int stashTimeout = config.getStashTimeout();
           
         StashCredentials stashCredentials = stashRequestFacade.getCredentials();
@@ -69,22 +69,20 @@ public class StashIssueReportingPostJob implements PostJob {
               stashRequestFacade.resetComments(stashProject, repository, stashPullRequestId, diffReport, stashUser, stashClient);
             }
             
-            boolean canApprovePullrequest = config.canApprovePullRequest();
-            if (canApprovePullrequest) {
+            boolean canApprovePullRequest = config.canApprovePullRequest();
+            if (canApprovePullRequest) {
               stashRequestFacade.addPullRequestReviewer(stashProject, repository, stashPullRequestId, stashCredentials.getLogin(), stashClient);
             }
-            
-            // if threshold exceeded, do not push issue list to Stash
-            if (issueReport.countIssues() >= issueThreshold) {
-              LOGGER.warn("Too many issues detected ({}/{}): Issues cannot be displayed in Diff view", issueReport.countIssues(), issueThreshold);
-            } else {
-              stashRequestFacade.postCommentPerIssue(stashProject, repository, stashPullRequestId, sonarQubeURL, issueReport, diffReport, stashClient);
+
+            stashRequestFacade.postCommentPerIssue(stashProject, repository, stashPullRequestId, sonarQubeURL, issueReport, diffReport, stashClient);
+
+            // if requested, create post analysis overview
+            boolean sentAnalysisOverview = config.includeAnalysisOverview();
+            if (sentAnalysisOverview) {
+              stashRequestFacade.postAnalysisOverview(stashProject, repository, stashPullRequestId, sonarQubeURL, issueThreshold, issueReport, stashClient);
             }
 
-            stashRequestFacade.postAnalysisOverview(stashProject, repository, stashPullRequestId, sonarQubeURL, issueThreshold, issueReport, stashClient);
-           
-            if (canApprovePullrequest) {
-           
+            if (canApprovePullRequest) {
               // if no new issues, plugin approves the pull-request 
               if (issueReport.countIssues() == 0) {
                 stashRequestFacade.approvePullRequest(stashProject, repository, stashPullRequestId, stashCredentials.getLogin(), stashClient);

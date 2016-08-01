@@ -22,6 +22,8 @@ public class StashPlugin extends SonarPlugin {
 
   private static final String DEFAULT_STASH_TIMEOUT_VALUE = "10000";
   private static final String DEFAULT_STASH_THRESHOLD_VALUE = "100";
+  private static final boolean DEFAULT_STASH_ANALYSIS_OVERVIEW = false;
+  private static final boolean DEFAULT_STASH_INCLUDE_EXISTING_ISSUES = false;
 
   private static final String CONFIG_PAGE_SUB_CATEGORY_STASH = "Stash";
   
@@ -33,7 +35,8 @@ public class StashPlugin extends SonarPlugin {
   public static final String CONTEXT_ISSUE_TYPE = "CONTEXT";
   public static final String REMOVED_ISSUE_TYPE = "REMOVED";
   public static final String ADDED_ISSUE_TYPE = "ADDED";
-  
+
+  public static final String SONARQUBE_URL = "sonar.host.url";
   public static final String STASH_NOTIFICATION = "sonar.stash.notification";
   public static final String STASH_PROJECT = "sonar.stash.project";
   public static final String STASH_REPOSITORY = "sonar.stash.repository";
@@ -45,9 +48,10 @@ public class StashPlugin extends SonarPlugin {
   public static final String STASH_REVIEWER_APPROVAL = "sonar.stash.reviewer.approval";
   public static final String STASH_ISSUE_THRESHOLD = "sonar.stash.issue.threshold";
   public static final String STASH_TIMEOUT = "sonar.stash.timeout";
-  public static final String SONARQUBE_URL = "sonar.host.url";
-  public static final String STASH_TASK_SEVERITY_THRESHOLD = "sonar.stash.task.issue.severity.threshold";
-  
+  public static final String STASH_ISSUE_SEVERITY_THRESHOLD = "sonar.stash.issue.severity.threshold";
+  public static final String STASH_INCLUDE_ANALYSIS_OVERVIEW = "sonar.stash.include.analysis.overview";
+  public static final String STASH_INCLUDE_EXISTING_ISSUES = "sonar.stash.include.existing.issues";
+
   @Override
   public List getExtensions() {
     return Arrays.asList(
@@ -58,42 +62,79 @@ public class StashPlugin extends SonarPlugin {
         StashProjectBuilder.class,
         StashRequestFacade.class,
         PropertyDefinition.builder(STASH_URL)
+            .index(1)
             .name("Stash base URL")
             .description("HTTP URL of Stash instance, such as http://yourhost.yourdomain/stash")
             .subCategory(CONFIG_PAGE_SUB_CATEGORY_STASH)
             .onQualifiers(Qualifiers.PROJECT).build(),
         PropertyDefinition.builder(STASH_LOGIN)
+            .index(2)
             .name("Stash base User")
             .description("User to push data on Stash instance")
             .subCategory(CONFIG_PAGE_SUB_CATEGORY_STASH)
             .onQualifiers(Qualifiers.PROJECT).build(),
+        PropertyDefinition.builder(STASH_PASSWORD)
+            .index(3)
+            .name("Stash base User Password")
+            .description("User password to push data on Stash instance")
+            .subCategory(CONFIG_PAGE_SUB_CATEGORY_STASH)
+            .type(PropertyType.PASSWORD)
+            .onQualifiers(Qualifiers.PROJECT).build(),
         PropertyDefinition.builder(STASH_TIMEOUT)
+            .index(4)
             .name("Stash issue Timeout")
             .description("Timeout when pushing a new issue to Stash (in ms)")
             .subCategory(CONFIG_PAGE_SUB_CATEGORY_STASH)
             .onQualifiers(Qualifiers.PROJECT)
             .defaultValue(DEFAULT_STASH_TIMEOUT_VALUE).build(),
         PropertyDefinition.builder(STASH_REVIEWER_APPROVAL)
+            .index(5)
             .name("Stash reviewer approval")
             .description("Does SonarQube approve the pull-request if there is no new issues?")
             .subCategory(CONFIG_PAGE_SUB_CATEGORY_STASH)
             .onQualifiers(Qualifiers.PROJECT)
             .type(PropertyType.BOOLEAN)
             .defaultValue("false").build(),
+        PropertyDefinition.builder(STASH_RESET_COMMENTS)
+            .index(6)
+            .name("Stash reset comments")
+            .description("Reset comments published during the previous SonarQube analysis")
+            .subCategory(CONFIG_PAGE_SUB_CATEGORY_STASH)
+            .onQualifiers(Qualifiers.PROJECT)
+            .type(PropertyType.BOOLEAN)
+            .defaultValue("true").build(),
         PropertyDefinition.builder(STASH_ISSUE_THRESHOLD)
+            .index(7)
             .name("Stash issue Threshold")
             .description("Threshold to limit the number of issues pushed to Stash server")
             .subCategory(CONFIG_PAGE_SUB_CATEGORY_STASH)
             .onQualifiers(Qualifiers.PROJECT)
             .defaultValue(DEFAULT_STASH_THRESHOLD_VALUE).build(),
-        PropertyDefinition.builder(STASH_TASK_SEVERITY_THRESHOLD)
-            .name("Stash tasks severity threshold")
-            .description("Only create tasks for issues with the same or higher severity")
+        PropertyDefinition.builder(STASH_ISSUE_SEVERITY_THRESHOLD)
+            .index(8)
+            .name("Stash issues severity threshold")
+            .description("Only create comment and task for issues with the same or higher severity")
             .type(PropertyType.SINGLE_SELECT_LIST)
             .subCategory(CONFIG_PAGE_SUB_CATEGORY_STASH)
             .onQualifiers(Qualifiers.PROJECT)
             .defaultValue(SEVERITY_NONE)
-            .options(ListUtils.sum(Arrays.asList(SEVERITY_NONE), SEVERITY_LIST)).build());
+            .options(ListUtils.sum(Arrays.asList(SEVERITY_NONE), SEVERITY_LIST)).build(),
+        PropertyDefinition.builder(STASH_INCLUDE_ANALYSIS_OVERVIEW)
+            .index(9)
+            .name("Include Analysis Overview Comment")
+            .description("Set to false to prevent creation of the analysis overview comment.")
+            .type(PropertyType.BOOLEAN)
+            .subCategory(CONFIG_PAGE_SUB_CATEGORY_STASH)
+            .onQualifiers(Qualifiers.PROJECT)
+            .defaultValue(Boolean.toString(DEFAULT_STASH_ANALYSIS_OVERVIEW)).build(),
+        PropertyDefinition.builder(STASH_INCLUDE_EXISTING_ISSUES)
+            .index(10)
+            .name("Include Existing Issues")
+            .description("Set to true to include already existing issues on modified lines.")
+            .type(PropertyType.BOOLEAN)
+            .subCategory(CONFIG_PAGE_SUB_CATEGORY_STASH)
+            .onQualifiers(Qualifiers.PROJECT)
+            .defaultValue(Boolean.toString(DEFAULT_STASH_INCLUDE_EXISTING_ISSUES)).build());
   }
 }
 

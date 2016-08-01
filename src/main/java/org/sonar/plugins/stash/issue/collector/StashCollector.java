@@ -15,6 +15,9 @@ import org.sonar.plugins.stash.issue.StashPullRequest;
 import org.sonar.plugins.stash.issue.StashTask;
 import org.sonar.plugins.stash.issue.StashUser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class StashCollector {
 
   private StashCollector() {
@@ -128,7 +131,7 @@ public final class StashCollector {
       long id = (long) jsonUser.get("id");
       String name = (String) jsonUser.get("name");
       String slug = (String) jsonUser.get("slug");
-      String email = (String) jsonUser.get("email");
+      String email = (String) jsonUser.get("emailAddress");
               
       return new StashUser(id, name, slug, email);
     
@@ -136,7 +139,28 @@ public final class StashCollector {
       throw new StashReportExtractionException(e);
     }
   }
-  
+
+  public static List<StashUser> extractUsers(String jsonBody) throws StashReportExtractionException {
+    List<StashUser> users = new ArrayList<>();
+
+    try {
+      JSONObject jsonComments = (JSONObject) new JSONParser().parse(jsonBody);
+
+      JSONArray jsonValues = (JSONArray) jsonComments.get("values");
+      if (jsonValues != null) {
+
+        for (Object obj : jsonValues.toArray()) {
+          JSONObject jsonComment = (JSONObject) obj;
+
+          users.add(extractUser(jsonComment.toJSONString()));
+        }
+      }
+    } catch (ParseException e) {
+      throw new StashReportExtractionException(e);
+    }
+    return users;
+  }
+
   public static StashDiffReport extractDiffs(String jsonBody) throws StashReportExtractionException {
     StashDiffReport result = new StashDiffReport();
 
