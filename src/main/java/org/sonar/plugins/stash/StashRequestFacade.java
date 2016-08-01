@@ -170,8 +170,8 @@ public class StashRequestFacade implements BatchComponent {
 
               // Create task linked to the comment if configured
               stashClient.postTaskOnComment(issue.getMessage(), comment.getId());
-
               LOGGER.debug("Comment \"{}\" has been linked to a Stash task", comment.getId());
+
               counter--;
             }
           }
