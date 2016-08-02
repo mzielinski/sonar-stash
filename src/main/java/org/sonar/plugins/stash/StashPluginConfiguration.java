@@ -73,4 +73,8 @@ public class StashPluginConfiguration implements BatchComponent {
     return settings.getBoolean(StashPlugin.STASH_INCLUDE_EXISTING_ISSUES);
   }
 
+  public String getBaseDir() {
+      return settings.getString(StashPlugin.STASH_PROJECT_BASE_DIR);
+  }
+
 }

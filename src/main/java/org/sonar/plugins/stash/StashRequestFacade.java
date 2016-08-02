@@ -44,7 +44,7 @@ public class StashRequestFacade implements BatchComponent {
   }
   
   public SonarQubeIssuesReport extractIssueReport(ProjectIssues projectIssues, InputFileCache inputFileCache){
-    return SonarQubeCollector.extractIssueReport(projectIssues, inputFileCache, projectBaseDir, config.includeExistingIssues());
+    return SonarQubeCollector.extractIssueReport(projectIssues, inputFileCache, projectBaseDir, config);
   }
 
   /**
