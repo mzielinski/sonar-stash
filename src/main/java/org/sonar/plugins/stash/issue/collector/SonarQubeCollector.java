@@ -15,6 +15,8 @@ import org.sonar.plugins.stash.StashPluginConfiguration;
 import org.sonar.plugins.stash.issue.SonarQubeIssue;
 import org.sonar.plugins.stash.issue.SonarQubeIssuesReport;
 
+import static org.asynchttpclient.util.Assertions.assertNotNull;
+
 public final class SonarQubeCollector {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SonarQubeCollector.class);
@@ -29,10 +31,10 @@ public final class SonarQubeCollector {
    * analysis.
    */
   public static SonarQubeIssuesReport extractIssueReport(ProjectIssues projectIssues, InputFileCache inputFileCache, File projectBaseDir, StashPluginConfiguration config) {
-    Assertions.assertNotNull(projectIssues, "projectIssues");
-    Assertions.assertNotNull(inputFileCache, "inputFileCache");
-    Assertions.assertNotNull(projectBaseDir, "projectBaseDir");
-    Assertions.assertNotNull(config, "config");
+    assertNotNull(projectIssues, "projectIssues");
+    assertNotNull(inputFileCache, "inputFileCache");
+    assertNotNull(projectBaseDir, "projectBaseDir");
+    assertNotNull(config, "config");
 
     SonarQubeIssuesReport result = new SonarQubeIssuesReport();
 
@@ -63,7 +65,6 @@ public final class SonarQubeCollector {
         } 
       }
     }
-
     return result;
   }
 

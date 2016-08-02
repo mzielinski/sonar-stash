@@ -89,4 +89,14 @@ public final class MarkdownPrinter {
     return sb.toString();
   }
 
+  public static String printErrorMessage(String message, String errorMessage) {
+    return "### Stash-sonar plugin was not able to perform analysis "
+            + NEW_LINE
+            + message + NEW_LINE + NEW_LINE
+            + "```"
+            + errorMessage
+            + " ```"
+            + NEW_LINE;
+  }
+
 }

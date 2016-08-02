@@ -405,17 +405,16 @@ public class StashClient {
   
   Response executeRequest(final BoundRequestBuilder requestBuilder) throws InterruptedException, IOException,
       ExecutionException, TimeoutException {
-    addAuthorization(requestBuilder);
+    requestBuilder.setRealm(buildRealm());
     requestBuilder.addHeader("Content-Type", "application/json");
     return requestBuilder.execute().get(stashTimeout, TimeUnit.MILLISECONDS);
   }
 
-  void addAuthorization(final BoundRequestBuilder requestBuilder) {
-    Realm realm = new Realm.Builder(credentials.getLogin(), credentials.getPassword())
+  private Realm buildRealm() {
+    return new Realm.Builder(credentials.getLogin(), credentials.getPassword())
             .setUsePreemptiveAuth(true)
             .setScheme(Realm.AuthScheme.BASIC)
           .build();
-    requestBuilder.setRealm(realm);
   }
   
   AsyncHttpClient createHttpClient(){
