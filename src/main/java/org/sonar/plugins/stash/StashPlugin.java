@@ -25,8 +25,8 @@ public class StashPlugin extends SonarPlugin {
   private static final String DEFAULT_STASH_THRESHOLD_VALUE = "100";
   private static final boolean DEFAULT_STASH_ANALYSIS_OVERVIEW = false;
   private static final boolean DEFAULT_STASH_STASH_REVIEWER_APPROVAL = false;
-  private static final boolean DEFAULT_STASH_STASH_RESET_COMMENTS = true;
-  private static final boolean DEFAULT_STASH_INCLUDE_EXISTING_ISSUES = true;
+  private static final boolean DEFAULT_STASH_STASH_RESET_COMMENTS = false;
+  private static final boolean DEFAULT_STASH_INCLUDE_EXISTING_ISSUES = false;
 
   private static final String CONFIG_PAGE_SUB_CATEGORY_STASH = "Stash";
 
@@ -119,7 +119,7 @@ public class StashPlugin extends SonarPlugin {
                     .type(PropertyType.SINGLE_SELECT_LIST)
                     .subCategory(CONFIG_PAGE_SUB_CATEGORY_STASH)
                     .onQualifiers(Qualifiers.PROJECT)
-                    .defaultValue(SEVERITY_NONE)
+                    .defaultValue(Severity.MAJOR)
                     .options(ListUtils.sum(Arrays.asList(SEVERITY_NONE), SEVERITY_LIST)).build(),
             PropertyDefinition.builder(STASH_INCLUDE_ANALYSIS_OVERVIEW)
                     .index(9)
