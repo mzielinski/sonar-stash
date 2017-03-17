@@ -28,7 +28,7 @@ public class StashIssueReportingPostJob implements PostJob {
     this.config = stashPluginConfiguration;
     this.inputFileCache = inputFileCache;
     this.stashRequestFacade = stashRequestFacade;
-  }
+    }
 
   @Override
   public void executeOn(Project project, SensorContext context) {

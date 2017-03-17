@@ -54,6 +54,7 @@ public class SonarQubeCollectorTest {
     when(inputFileCache.getInputFile("component2")).thenReturn(inputFile2);
 
     config = mock(StashPluginConfiguration.class);
+    when(config.getBaseDir()).thenReturn("modules");
 
     issue1 = mock(Issue.class);
     when(issue1.line()).thenReturn(1);
@@ -103,12 +104,12 @@ public class SonarQubeCollectorTest {
 
     SonarQubeIssue sqIssue1 = report.getIssues().get(0);
     assertTrue(StringUtils.equals(sqIssue1.getMessage(), "message1"));
-    assertTrue(StringUtils.equals(sqIssue1.getPath(), "project/path1"));
+    assertTrue(StringUtils.equals(sqIssue1.getPath(), "modules/project/path1"));
     assertTrue(sqIssue1.getLine() == 1);
 
     SonarQubeIssue sqIssue2 = report.getIssues().get(1);
     assertTrue(StringUtils.equals(sqIssue2.getMessage(), "message2"));
-    assertTrue(StringUtils.equals(sqIssue2.getPath(), "project/path2"));
+    assertTrue(StringUtils.equals(sqIssue2.getPath(), "modules/project/path2"));
     assertTrue(sqIssue2.getLine() == 2);
 
   }
@@ -128,7 +129,7 @@ public class SonarQubeCollectorTest {
 
     SonarQubeIssue sqIssue = report.getIssues().get(0);
     assertTrue(StringUtils.equals(sqIssue.getMessage(), "message1"));
-    assertTrue(StringUtils.equals(sqIssue.getPath(), "project/path1"));
+    assertTrue(StringUtils.equals(sqIssue.getPath(), "modules/project/path1"));
     assertTrue(sqIssue.getLine() == 0);
 
   }
@@ -165,7 +166,7 @@ public class SonarQubeCollectorTest {
 
     SonarQubeIssue sqIssue = report.getIssues().get(0);
     assertTrue(StringUtils.equals(sqIssue.getMessage(), "message2"));
-    assertTrue(StringUtils.equals(sqIssue.getPath(), "project/path2"));
+    assertTrue(StringUtils.equals(sqIssue.getPath(), "modules/project/path2"));
     assertTrue(sqIssue.getLine() == 2);
   }
 

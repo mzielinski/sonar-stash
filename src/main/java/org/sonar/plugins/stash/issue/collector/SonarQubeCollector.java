@@ -71,7 +71,7 @@ public final class SonarQubeCollector {
   private static String buildPath(File projectBaseDir, File file, StashPluginConfiguration config) {
     final String path = new PathResolver().relativePath(projectBaseDir, file);
     if (StringUtils.isNotBlank(config.getBaseDir())) {
-      return config.getBaseDir() + File.separator + path;
+      return config.getBaseDir() + "/" + path;
     }
     return path;
   }
